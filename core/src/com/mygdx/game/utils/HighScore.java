@@ -39,7 +39,7 @@ public class HighScore implements Serializable, Comparable<HighScore> {
                 sortGeneric.quickSort(scores);
             }
         }
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Constants.SCORE_FILE_PATH))){
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Constants.SCORE_FILE))){
             oos.writeObject(scores);
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,13 +49,11 @@ public class HighScore implements Serializable, Comparable<HighScore> {
     public static HighScore[] deSerialize(boolean extend){
 
         try {
-            File scoreFile = new File(Constants.SCORE_FILE_PATH);
-            System.out.println(scoreFile);
+            File scoreFile = Constants.SCORE_FILE;
             if(scoreFile.exists()) {
 
-                BufferedReader br = new BufferedReader(new FileReader(Constants.SCORE_FILE_PATH));
+                BufferedReader br = new BufferedReader(new FileReader(Constants.SCORE_FILE));
                 if (br.readLine() == null) {
-                    System.out.println("No errors, and file empty");
                     if(extend)
                         return new HighScore[1];
 
@@ -76,7 +74,6 @@ public class HighScore implements Serializable, Comparable<HighScore> {
                 }
             }
             else {
-                System.out.println(scoreFile.toPath());
                 scoreFile.createNewFile(); // if file already exists will do nothing
                 if(extend)
                     return new HighScore[1];
@@ -85,6 +82,7 @@ public class HighScore implements Serializable, Comparable<HighScore> {
             }
         } catch (ClassNotFoundException fileNotFoundException){
 
+//            Files.createFile("assets/scoreFile.ser"); // if file already exists will do nothing
             if(extend)
                 return new HighScore[1];
             else
