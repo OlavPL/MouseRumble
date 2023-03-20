@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.HackathonRumble;
+
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Locale;
@@ -49,9 +51,14 @@ public class HighScore implements Screen {
 
         table.add(title).fillX().uniformX();
         table.row().pad(20,0,20,0);
-        for (com.mygdx.game.utils.HighScore hs : scores) {
-            table.add(new Label("Score: "+hs.getScore()+", time: "+dateFormat.format(hs.getDate()),skin)).fillX().uniformX();
-            table.row().pad(20,0,20,0);
+        if (scores.length>0)
+            for (com.mygdx.game.utils.HighScore hs : scores) {
+                table.add(new Label("Score: "+hs.getScore()+", time: "+dateFormat.format(hs.getDate()),skin)).fillX().uniformX();
+                table.row().pad(20,0,20,0);
+            }
+        else{
+            table.add(new Label("There are no High Scores yet, go make one!",skin)).fillX().uniformX();
+            table.row().pad(40,0,40,0);
         }
         table.add(mainMenu).fillX().uniformX();
 

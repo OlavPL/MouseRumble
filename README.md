@@ -1,5 +1,7 @@
 # MouseRumble
-A kindof rougelike / endeless survival game
+A kind of rougelike / endeless survival game
+
+Keybinds: movement-> movement & shoot-> space
 
 Project I started for local 24 hour Hackathon in 2023
 
@@ -11,3 +13,5 @@ https://pixivan.itch.io/top-down-forest-tileset
 Animal sprites by Kacper Woźniak - Tiny Tiny Heroes\
 https://thkaspar.itch.io/tth-animals
 Copyright Creative Commons
+
+![Damn, cant fint the gameplay screenshot](https://github.com/OlavPL/HackathonRumble/blob/master/assets/ThumbnailHackathonrumble.PNG)

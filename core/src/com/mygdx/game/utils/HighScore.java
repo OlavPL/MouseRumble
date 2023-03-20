@@ -3,6 +3,7 @@ package com.mygdx.game.utils;
 import lombok.Getter;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 @Getter
@@ -46,18 +47,50 @@ public class HighScore implements Serializable, Comparable<HighScore> {
     }
 
     public static HighScore[] deSerialize(boolean extend){
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Constants.SCORE_FILE_PATH))){
-            HighScore[] score = (HighScore[]) ois.readObject();
-            if (score.length<5){
-                if(extend) {
-                    HighScore[] newScore = new HighScore[score.length + 1];
-                    System.arraycopy(score, 0, newScore, 0, score.length);
-                    score = newScore;
+
+        try {
+            File scoreFile = new File(Constants.SCORE_FILE_PATH);
+            if(scoreFile.exists()) {
+
+                BufferedReader br = new BufferedReader(new FileReader(Constants.SCORE_FILE_PATH));
+                if (br.readLine() == null) {
+                    System.out.println("No errors, and file empty");
+                    if(extend)
+                        return new HighScore[1];
+
+                    return new HighScore[0];
+                }
+                else {
+                    ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(scoreFile.toPath()));
+                    HighScore[] score = (HighScore[]) ois.readObject();
+
+                    if (score.length < 5) {
+                        if (extend) {
+                            HighScore[] newScore = new HighScore[score.length + 1];
+                            System.arraycopy(score, 0, newScore, 0, score.length);
+                            score = newScore;
+                        }
+                    }
+                    return score;
                 }
             }
-            return score;
-        } catch (IOException | ClassNotFoundException fileNotFoundException) {
-            fileNotFoundException.printStackTrace();
+            else {
+                scoreFile.createNewFile(); // if file already exists will do nothing
+                if(extend)
+                    return new HighScore[1];
+
+                return new HighScore[0];
+            }
+        } catch (ClassNotFoundException fileNotFoundException){
+
+//            Files.createFile("assets/scoreFile.ser"); // if file already exists will do nothing
+            if(extend)
+                return new HighScore[1];
+            else
+                return new HighScore[0];
+        }
+        catch (IOException IOexc) {
+            IOexc.printStackTrace();
             return new HighScore[1];
         }
     }

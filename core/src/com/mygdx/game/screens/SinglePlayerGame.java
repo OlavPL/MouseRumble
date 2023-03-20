@@ -98,7 +98,7 @@ public class SinglePlayerGame implements Screen {
         world.setContactListener(new WorldContactListener());
 
         //sound
-        theme = Gdx.audio.newMusic(Gdx.files.internal("AuthenticOctopusGameGrindyourGears.mp3"));
+        theme = Gdx.audio.newMusic(Gdx.files.internal("authenticOctopusGameGrindyourGears.mp3"));
         theme.setLooping(true);
         theme.play();
 
