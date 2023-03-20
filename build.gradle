@@ -62,10 +62,11 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         compileOnly 'org.projectlombok:lombok:1.18.26'
         annotationProcessor 'org.projectlombok:lombok:1.18.26'
-        
+
     }
 }

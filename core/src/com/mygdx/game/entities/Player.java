@@ -30,7 +30,7 @@ public class Player extends Character implements InputProcessor {
     private final static Texture  shieldTexture = new Texture("sprites/playerShield.png");
 //    private final static Texture  spriteSheet = new Texture("sprites/characterSprites/mouseWalk.png");
     private final static TextureRegion  singularMouse = new TextureRegion(
-            new Texture("sprites/characterSprites/SingularMouse.png")
+            new Texture("sprites/characterSprites/singularMouse.png")
     );
     protected final float TEXTURE_OFFSET = 0f;
 
@@ -213,12 +213,11 @@ public class Player extends Character implements InputProcessor {
     //</editor-fold>
 
     public void shoot(World world){
-        float radius = 8;
         Vector2 dir = body.getLinearVelocity().nor();
         if(dir.isZero())
             dir = lastDirection.isZero()? new Vector2(0,1): lastDirection;
-        float x = getPosition().x * PPM + (WIDTH + radius) * dir.x;
-        float y = getPosition().y * PPM + (HEIGHT + radius) * dir.y;
+        float x = getPosition().x * PPM + WIDTH * dir.x;
+        float y = getPosition().y * PPM + HEIGHT * dir.y;
         if(x < Constants.TILE_SIZE+ TILE_SIZE/2 || x > Constants.MAP_WIDTH * TILE_SIZE - TILE_SIZE*2 )
             return;
         if(y < Constants.TILE_SIZE*2 || y > Constants.MAP_HEIGHT * TILE_SIZE - TILE_SIZE )

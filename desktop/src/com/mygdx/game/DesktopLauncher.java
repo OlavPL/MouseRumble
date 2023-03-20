@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.mygdx.game.HackathonRumble;
@@ -11,8 +12,9 @@ public class DesktopLauncher {
 		config.setWindowedMode(1280,720);
 		config.setResizable(false);
 		config.setForegroundFPS(60);
+		config.setWindowIcon(Files.FileType.Internal,"sprites/characterSprites/singularMouse.png");
 		config.useVsync(true);
-		config.setTitle("HackathonRumble");
+		config.setTitle("MouseRumble");
 		new Lwjgl3Application(new HackathonRumble(), config);
 	}
 }
