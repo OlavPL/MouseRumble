@@ -19,7 +19,7 @@ import com.mygdx.game.entities.Pickup.PPHeal;
 import com.mygdx.game.entities.Pickup.PPShield;
 import com.mygdx.game.entities.Pickup.PowerUp;
 import com.mygdx.game.entities.SnakeSpawner;
-import com.mygdx.game.HackathonRumble;
+import com.mygdx.game.MouseRumble;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.entities.projectiles.Projectile;
 import com.mygdx.game.handlers.WorldContactListener;
@@ -32,7 +32,7 @@ import static com.mygdx.game.utils.Constants.PPM;
 
 public class SinglePlayerGame implements Screen {
     private static final int SCALE = 3;
-    private HackathonRumble parent;
+    private final MouseRumble parent;
 
     // Map handling
     private final TiledMap map;
@@ -50,24 +50,23 @@ public class SinglePlayerGame implements Screen {
     private final Hud hud;
 
     // player
-    private Player player;
-    private int level = 1;
+    private final Player player;
 
     //Spawners
-    private ArrayList<Cobra> cobras = new ArrayList<>();
+    private final ArrayList<Cobra> cobras = new ArrayList<>();
     private float cobraSpawnCD = 3f;
     private float cobraSpawnTimer = 0;
     private ArrayList<SnakeSpawner> snakeSpawners;
-    private ArrayList<Projectile> snakes;
+    private final ArrayList<Projectile> snakes;
     private float snakeSpawnTimer = 0;
     private float snakeSpawnCD = 2f;
 
-    private ArrayList<PowerUp> powers;
+    private final ArrayList<PowerUp> powers;
 
     private float powerSpawnTimer = 0;
     private float PowerCD = 7f;
 
-    private HighScore[] scores;
+    private final HighScore[] scores;
 
     // Spawns get progressively faster based on gametime / level threshold
     private float gameTime = 0;
@@ -77,7 +76,7 @@ public class SinglePlayerGame implements Screen {
 
     private Music theme;
 
-    public SinglePlayerGame(HackathonRumble parent){
+    public SinglePlayerGame(MouseRumble parent){
         this.parent = parent;
         scores = HighScore.deSerialize(true);
 
@@ -98,7 +97,7 @@ public class SinglePlayerGame implements Screen {
         world.setContactListener(new WorldContactListener());
 
         //sound
-        theme = Gdx.audio.newMusic(Gdx.files.internal("authenticOctopusGameGrindyourGears.mp3"));
+        theme = Gdx.audio.newMusic(Gdx.files.internal("sounds/authenticOctopusGameGrindyourGears.mp3"));
         theme.setLooping(true);
         theme.play();
 
@@ -244,10 +243,10 @@ public class SinglePlayerGame implements Screen {
     //Places a boulder spawner in each corner
     private void populateSnakeSpawner(){
         snakeSpawners = new ArrayList<>();
-        snakeSpawners.add(new SnakeSpawner(world,tileWidth+tileWidth/2,tileHeight*2+tileHeight/2,0));
-        snakeSpawners.add(new SnakeSpawner(world,tileWidth * mapWidth -tileWidth*2-tileWidth/2,tileHeight*2+tileHeight/2,90));
-        snakeSpawners.add(new SnakeSpawner(world,mapWidth * tileWidth -tileWidth*2-tileWidth/2, mapHeight * tileHeight-tileHeight-tileHeight/2,180));
-        snakeSpawners.add(new SnakeSpawner(world,tileWidth+tileWidth/2,mapHeight * tileHeight-tileHeight-tileHeight/2,270));
+        snakeSpawners.add(new SnakeSpawner(world,(float)(tileWidth+tileWidth/2),(float)(tileHeight*2+tileHeight/2),0));
+        snakeSpawners.add(new SnakeSpawner(world,(float)(tileWidth * mapWidth -tileWidth*2-tileWidth/2),(float)(tileHeight*2+tileHeight/2),90));
+        snakeSpawners.add(new SnakeSpawner(world,(float)(mapWidth * tileWidth -tileWidth*2-tileWidth/2), (float)(mapHeight * tileHeight-tileHeight-tileHeight/2),180));
+        snakeSpawners.add(new SnakeSpawner(world,(float)(tileWidth+tileWidth/2),(float)(mapHeight * tileHeight-tileHeight-tileHeight/2),270));
     }
 
     // Spawn random PowerUp on a random spot within map, excluding outer 2 tiles around the map
@@ -273,7 +272,7 @@ public class SinglePlayerGame implements Screen {
     }
 
     private void updateLevel(){
-        level = (int)(gameTime / LEVEL_THRESHOLD);
+//        level = (int)(gameTime / LEVEL_THRESHOLD);
         cobraSpawnCD *= 0.8f;
         snakeSpawnCD *= 0.8f;
         for (SnakeSpawner spawner : snakeSpawners){

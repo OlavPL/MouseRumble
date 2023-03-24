@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.HackathonRumble;
+import com.mygdx.game.MouseRumble;
 import com.mygdx.game.utils.Constants;
 
 public class Hud {
@@ -18,7 +18,7 @@ public class Hud {
     private Label lifeStatus;
 
     public Hud(SpriteBatch sBatch){
-        viewport = new FitViewport(HackathonRumble.W_WIDTH, HackathonRumble.W_HEIGHT, new OrthographicCamera());
+        viewport = new FitViewport(MouseRumble.W_WIDTH, MouseRumble.W_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, sBatch);
 
         Table table = new Table();

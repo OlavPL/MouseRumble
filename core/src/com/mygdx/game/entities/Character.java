@@ -1,5 +1,6 @@
 package com.mygdx.game.entities;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,18 +18,24 @@ public abstract class Character {
     // body
     protected World world;
     protected Body body;
-    protected int width = 12;
-    protected int height = 16;
+    protected int width;
+    protected int height;
 
     // movement
     protected float speed = 10;
     protected final double DIAGONAL_MULTI = Math.cos(Math.PI/4);
-    protected Vector2 lastDirection = new Vector2();
+    protected Vector2 lastDirection = new Vector2(1,0);
 
     //stats
     protected float maxHealth = 10;
     protected float health = maxHealth;
     protected float attack = 1;
+    protected boolean isShielded = false;
+    protected boolean canShoot = true;
+    protected float shootCD = 0.5f;
+    protected float shootCDR = 0;
+
+    protected final Sound soundGetHit, soundShoot;
 
 
     // animation
@@ -40,7 +47,9 @@ public abstract class Character {
     protected int frameRows;
     protected float stateTime;
 
-    public Character(World world, float posX, float posY, int width, int height, Texture spriteSheet, int frameRows, int frameColumns){
+    public Character(World world, float posX, float posY, int width, int height, Texture spriteSheet,
+                     int frameRows, int frameColumns, Sound soundGetHit, Sound soundShoot
+    ){
         this.world = world;
         this.width = width;
         this.height= height;
@@ -50,6 +59,8 @@ public abstract class Character {
         this.spriteSheet = spriteSheet;
         this.frameColumns = frameColumns;
         this.frameRows = frameRows;
+        this.soundShoot = soundShoot;
+        this.soundGetHit = soundGetHit;
 
         Animation<TextureRegion>[] animations = Utils.createMovementAnimations(spriteSheet, frameColumns, frameRows);
         for (int i = 0; i < animations.length; i++) {
@@ -71,11 +82,16 @@ public abstract class Character {
 
     public void receiveDamage(float damage){
         health-= damage;
-    }
 
-    protected void setLinearVelocity(float x, float y){
+        if(health <= 0)
+            die();
+    }
+    public abstract void die();
+
+    public void setLinearVelocity(float x, float y){
         body.setLinearVelocity(x,y);
     }
+    public abstract void updateMovement();
     public Vector2 getPosition(){return body.getPosition();}
 
     public TextureRegion selectFrame(){

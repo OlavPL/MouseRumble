@@ -9,14 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.HackathonRumble;
+import com.mygdx.game.MouseRumble;
 
 import static com.mygdx.game.utils.Constants.skin;
 
 public class MenuScreen implements Screen {
-    HackathonRumble parent;
+    MouseRumble parent;
     Stage stage;
-    public MenuScreen(HackathonRumble parent){
+    public MenuScreen(MouseRumble parent){
         this.parent = parent;
         stage = new Stage(new ScreenViewport());
     }
@@ -43,7 +43,7 @@ public class MenuScreen implements Screen {
         table.row().pad(20,0,20,0);
         table.add(exitGame).fillX().uniformX();
 
-        stage.getViewport().update(HackathonRumble.W_WIDTH, HackathonRumble.W_HEIGHT,true);
+        stage.getViewport().update(MouseRumble.W_WIDTH, MouseRumble.W_HEIGHT,true);
 
         singlePlayerGame.addListener(new ChangeListener() {
             @Override

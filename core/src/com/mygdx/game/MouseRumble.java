@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HackathonRumble extends Game {
+public class MouseRumble extends Game {
 	public static int W_WIDTH = 1280;
 	public static int W_HEIGHT = 720;
 	private Screen menuScreen, singlePlayerGame, highScore;

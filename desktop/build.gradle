@@ -4,14 +4,10 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../assets"]
 
 mainClassName = "com.mygdx.game.DesktopLauncher"
-//def osName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
 project.ext.assetsDir = new File("../assets")
-
-import org.gradle.nativeplatform.platform.OperatingSystem
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 OperatingSystem os = DefaultNativePlatform.currentOperatingSystem;
-//import org.gradle.internal.os.OperatingSystem
 
 
 task runGame(dependsOn: classes, type: JavaExec) {

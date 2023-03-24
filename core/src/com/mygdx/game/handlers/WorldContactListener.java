@@ -1,6 +1,7 @@
 package com.mygdx.game.handlers;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.game.entities.Behaviuour;
 import com.mygdx.game.entities.Pickup.PowerUp;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.entities.projectiles.PlayerProjectile;
@@ -25,7 +26,7 @@ public class WorldContactListener implements ContactListener {
             Cobra cobra = (Cobra) cobraf.getUserData();
             Player player = (Player) playerf.getUserData();
             if(cobraf.isSensor()){
-                if(cobra.isRetreating())
+                if(cobra.getBehaviour() == Behaviuour.RETREATING)
                     return;
 
                 cobra.setAggressive();

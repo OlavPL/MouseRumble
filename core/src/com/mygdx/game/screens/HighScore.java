@@ -10,22 +10,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.HackathonRumble;
+import com.mygdx.game.MouseRumble;
 
-import java.io.IOException;
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Locale;
 
 import static com.mygdx.game.utils.Constants.skin;
 
 public class HighScore implements Screen {
-    HackathonRumble parent;
+    MouseRumble parent;
     Stage stage;
     com.mygdx.game.utils.HighScore[] scores;
     Locale locale = new Locale("no", "NO");
     DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
-    public HighScore(HackathonRumble parent){
+    public HighScore(MouseRumble parent){
         this.parent = parent;
         stage = new Stage(new ScreenViewport());
         scores = com.mygdx.game.utils.HighScore.deSerialize(false);
@@ -61,7 +59,7 @@ public class HighScore implements Screen {
         }
         table.add(mainMenu).fillX().uniformX();
 
-        stage.getViewport().update(HackathonRumble.W_WIDTH, HackathonRumble.W_HEIGHT,true);
+        stage.getViewport().update(MouseRumble.W_WIDTH, MouseRumble.W_HEIGHT,true);
 
         mainMenu.addListener(new ChangeListener() {
             @Override
