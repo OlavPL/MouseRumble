@@ -9,10 +9,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.utils.Constants;
 import lombok.Getter;
+import lombok.Setter;
 
 import static com.mygdx.game.utils.Constants.PPM;
 
 @Getter
+@Setter
 public class Cobra extends Character {
     float AGGRO_RANGE = 50;
     private final static int WIDTH = 16;
@@ -36,6 +38,7 @@ public class Cobra extends Character {
     private float wanderDuration = 0f;
     private Behaviuour behaviour = Behaviuour.IDLE;
     private final Vector2 retreatVector = new Vector2(0,0);
+    private boolean isInContact = false;
 
 
     public Cobra(World world, float posX, float posY, Player player) {
@@ -67,6 +70,11 @@ public class Cobra extends Character {
                 //Turn back to aggressive and reset retreat when retreat is ran out
                 if(retreatCountdown >= RETREAT_DURATION){
                     retreatCountdown = 0;
+                    if(isInContact){
+                        defaultAttack();
+                        retreat();
+                        break;
+                    }
                     setAggressive();
                 }
                 break;
@@ -92,6 +100,10 @@ public class Cobra extends Character {
         destroy = true;
         soundGetHit.play();
         player.addPoints(POINTS_VALUE);
+    }
+    @Override
+    public void defaultAttack(){
+        player.receiveDamage(attack);
     }
 
     @Override

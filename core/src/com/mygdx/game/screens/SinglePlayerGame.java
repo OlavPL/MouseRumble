@@ -18,7 +18,7 @@ import com.mygdx.game.entities.Cobra;
 import com.mygdx.game.entities.Pickup.PPHeal;
 import com.mygdx.game.entities.Pickup.PPShield;
 import com.mygdx.game.entities.Pickup.PowerUp;
-import com.mygdx.game.entities.SnakeSpawner;
+import com.mygdx.game.entities.spawners.SnakeSpawner;
 import com.mygdx.game.MouseRumble;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.entities.projectiles.Projectile;
@@ -29,6 +29,7 @@ import com.mygdx.game.utils.Utils;
 import java.util.ArrayList;
 
 import static com.mygdx.game.utils.Constants.PPM;
+import static com.mygdx.game.utils.Constants.TILE_SIZE;
 
 public class SinglePlayerGame implements Screen {
     private static final int SCALE = 3;
@@ -43,7 +44,6 @@ public class SinglePlayerGame implements Screen {
 
     //World and listeners
     private final World world;
-    WorldContactListener worldContactListener;
 
     //rendering
     private final SpriteBatch sBatch;
@@ -58,9 +58,6 @@ public class SinglePlayerGame implements Screen {
     private float cobraSpawnTimer = 0;
     private ArrayList<SnakeSpawner> snakeSpawners;
     private final ArrayList<Projectile> snakes;
-    private float snakeSpawnTimer = 0;
-    private float snakeSpawnCD = 2f;
-
     private final ArrayList<PowerUp> powers;
 
     private float powerSpawnTimer = 0;
@@ -70,6 +67,8 @@ public class SinglePlayerGame implements Screen {
 
     // Spawns get progressively faster based on gametime / level threshold
     private float gameTime = 0;
+    private float level = 1;
+    private float pointsMultiplier = 1;
     private final float LEVEL_THRESHOLD = 30;
 
     //sound
@@ -81,19 +80,18 @@ public class SinglePlayerGame implements Screen {
         scores = HighScore.deSerialize(true);
 
         //TiledMap
-        map = new TmxMapLoader().load("map/Arena1.tmx");
-
+        map = new TmxMapLoader().load("map/Arena2.tmx");
+        tmrenderer = new OrthogonalTiledMapRenderer(map);
         tileWidth = map.getProperties().get("tilewidth", Integer.class);
         tileHeight = map.getProperties().get("tileheight", Integer.class);
         mapWidth = map.getProperties().get("width", Integer.class);
         mapHeight = map.getProperties().get("height", Integer.class);
-        tmrenderer = new OrthogonalTiledMapRenderer(map);
         debugRenderer = new Box2DDebugRenderer();
 
 
         // World logic
         world = new World(new Vector2(0,0),false);
-        Utils.parseTiledObjectLayer(world, map.getLayers().get("collision-layer").getObjects());
+        Utils.parseTiledCollisionLayer(world, map.getLayers().get("collision-layer").getObjects());
         world.setContactListener(new WorldContactListener());
 
         //sound
@@ -106,7 +104,8 @@ public class SinglePlayerGame implements Screen {
         hud = new Hud(sBatch);
 
         //player
-        player = new Player(world, 100, 100);
+//        player = new Player(world, (TILE_SIZE*12), (TILE_SIZE*12));
+        player = new Player(world, (TILE_SIZE*0), (TILE_SIZE*0));
         Gdx.input.setInputProcessor(player);
 
         //cameras
@@ -116,9 +115,12 @@ public class SinglePlayerGame implements Screen {
         gameCamera.setToOrtho(false, mapW / SCALE, mapH / SCALE);
 
         // populate spawners
-        populateSnakeSpawner();
+//        populateSnakeSpawner();
         snakes = new ArrayList<>();
         powers = new ArrayList<>();
+        snakeSpawners = new ArrayList<>();
+
+        Utils.parseTiledSpawnLayer(world, map.getLayers().get("spawn_layer").getObjects(), player, snakeSpawners);
     }
 
     private void update(float delta){
@@ -131,7 +133,7 @@ public class SinglePlayerGame implements Screen {
         player.update(delta);
         if(player.getHealth() <=0)
             endGame();
-        player.addPoints(delta);
+        player.addPoints(delta*(level*1.1f));
         hud.updateScore((int)player.getPoints());
         hud.updateLives((int)player.getHealth());
 
@@ -139,7 +141,7 @@ public class SinglePlayerGame implements Screen {
 
         //Spawners
         cobraSpawnTimer += delta;
-//         On cool down spawn Cobra from random spawner
+//         On cooldown spawn Cobra from random spawner
         if(cobraSpawnTimer >= cobraSpawnCD){
             spawnCobra();
             cobraSpawnTimer -= cobraSpawnCD;
@@ -150,12 +152,6 @@ public class SinglePlayerGame implements Screen {
             spawner.update(delta);
         }
 
-
-        // On cool down spawn snake from random spawner
-        if(snakeSpawnTimer >= snakeSpawnCD){
-//            snakes.add(snakeSpawners.get( (int)(Math.random() * (snakeSpawners.size()))).getNewSnake(world));
-            snakeSpawnTimer -= snakeSpawnCD;
-        }
         Utils.iterateProjectiles(world,delta, snakes);
 
         Utils.cleanPowerUps(world,powers);
@@ -240,15 +236,6 @@ public class SinglePlayerGame implements Screen {
         }
     }
 
-    //Places a boulder spawner in each corner
-    private void populateSnakeSpawner(){
-        snakeSpawners = new ArrayList<>();
-        snakeSpawners.add(new SnakeSpawner(world,(float)(tileWidth+tileWidth/2),(float)(tileHeight*2+tileHeight/2),0));
-        snakeSpawners.add(new SnakeSpawner(world,(float)(tileWidth * mapWidth -tileWidth*2-tileWidth/2),(float)(tileHeight*2+tileHeight/2),90));
-        snakeSpawners.add(new SnakeSpawner(world,(float)(mapWidth * tileWidth -tileWidth*2-tileWidth/2), (float)(mapHeight * tileHeight-tileHeight-tileHeight/2),180));
-        snakeSpawners.add(new SnakeSpawner(world,(float)(tileWidth+tileWidth/2),(float)(mapHeight * tileHeight-tileHeight-tileHeight/2),270));
-    }
-
     // Spawn random PowerUp on a random spot within map, excluding outer 2 tiles around the map
     private void spawnPowerUp(){
         float posX = (float)((Math.random() * ((mapWidth-4)*tileWidth)) +tileWidth*2);
@@ -272,9 +259,12 @@ public class SinglePlayerGame implements Screen {
     }
 
     private void updateLevel(){
-//        level = (int)(gameTime / LEVEL_THRESHOLD);
+        level = (int)(gameTime / LEVEL_THRESHOLD);
+        pointsMultiplier = 1 + level*0.1f;
         cobraSpawnCD *= 0.8f;
-        snakeSpawnCD *= 0.8f;
+        for (SnakeSpawner spawner: snakeSpawners) {
+            spawner.levelUp();
+        }
         for (SnakeSpawner spawner : snakeSpawners){
             spawner.setSpawnCDMax(spawner.getSpawnCDMax() * 0.8f);
             spawner.setSpawnCDMin(spawner.getSpawnCDMin() * 0.8f);

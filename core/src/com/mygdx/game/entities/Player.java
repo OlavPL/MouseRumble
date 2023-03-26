@@ -51,7 +51,8 @@ public class Player extends Character implements InputProcessor {
                 Gdx.audio.newSound(Gdx.files.internal("sounds/thud.wav"))
         );
         aimVector = new Vector2(0,0);
-//        currentFrame = new TextureRegion(singularMouse);
+        maxHealth = 50;
+        health = maxHealth;
     }
 
     // Update loop for player related stuff, uses world delta
@@ -136,7 +137,7 @@ public class Player extends Character implements InputProcessor {
             }
             case Input.Keys.SPACE: {
                 if(canShoot)
-                    shoot(body.getWorld());
+                    defaultAttack();
                 break;
             }
 
@@ -240,15 +241,17 @@ public class Player extends Character implements InputProcessor {
     }
     //</editor-fold>
 
-    public void shoot(World world){
+    public void shoot(){
         canShoot = false;
         Vector2 dir = aimVector.isZero()? lastAimVector : aimVector;
         float x = getPosition().x * PPM + WIDTH * dir.x;
         float y = getPosition().y * PPM + HEIGHT * dir.y;
-        if(x < Constants.TILE_SIZE+ (float)(TILE_SIZE/2) || x > Constants.MAP_WIDTH * TILE_SIZE - TILE_SIZE*2 )
-            return;
-        if(y < Constants.TILE_SIZE*2 || y > Constants.MAP_HEIGHT * TILE_SIZE - TILE_SIZE )
-            return;
+
+        //Code for containing projectile shooting withing Areana1 box
+//        if(x < Constants.TILE_SIZE+ (float)(TILE_SIZE/2) || x > Constants.MAP_WIDTH * TILE_SIZE - TILE_SIZE*2 )
+//            return;
+//        if(y < Constants.TILE_SIZE*2 || y > Constants.MAP_HEIGHT * TILE_SIZE - TILE_SIZE )
+//            return;
 
         soundShoot.play(.6f);
         projectiles.add(new PlayerProjectile(
@@ -256,6 +259,10 @@ public class Player extends Character implements InputProcessor {
         ));
     }
 
+    @Override
+    public void defaultAttack(){
+        shoot();
+    }
     @Override
     public void receiveDamage(float damage){
         if(isShielded){

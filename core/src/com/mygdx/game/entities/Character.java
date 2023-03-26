@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.game.utils.Constants;
 import com.mygdx.game.utils.Factories;
 import com.mygdx.game.utils.Utils;
 import lombok.Getter;
@@ -27,8 +28,7 @@ public abstract class Character {
     protected Vector2 lastDirection = new Vector2(1,0);
 
     //stats
-    protected float maxHealth = 10;
-    protected float health = maxHealth;
+    protected float maxHealth, health;
     protected float attack = 1;
     protected boolean isShielded = false;
     protected boolean canShoot = true;
@@ -79,7 +79,7 @@ public abstract class Character {
     public abstract void render(SpriteBatch sBatch);
 
 
-
+    public abstract void defaultAttack();
     public void receiveDamage(float damage){
         health-= damage;
 
@@ -114,5 +114,10 @@ public abstract class Character {
 
         return moveDownAnim.getKeyFrame(stateTime, true);
     }
+
+    public void setPosition(float x, float y){
+        body.setTransform(x / Constants.PPM, y / Constants.PPM, 0);
+        System.out.println("X: " + x + ", y: "+y);
+    };
 
 }

@@ -33,6 +33,7 @@ public class WorldContactListener implements ContactListener {
             }
             else {
                 player.receiveDamage(cobra.getAttack());
+                cobra.setInContact(true);
                 cobra.retreat();
             }
             return;
@@ -70,7 +71,25 @@ public class WorldContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
+        Fixture fA = contact.getFixtureA();
+        Fixture fB = contact.getFixtureB();
 
+        if(fA == null || fB == null) return;
+        if(fA.getUserData() == null || fB.getUserData() == null) return;
+
+        if(isPlayer_Cobra(fA, fB)){
+            Fixture cobraF = fA.getUserData() instanceof Cobra ? fA : fB;
+            Fixture playerF = cobraF == fA ? fB: fA;
+            Cobra cobra = (Cobra) cobraF.getUserData();
+            Player player = (Player) playerF.getUserData();
+            if(cobraF.isSensor()){
+                return;
+            }
+            else {
+                cobra.setInContact(false);
+            }
+            return;
+        }
     }
 
     @Override

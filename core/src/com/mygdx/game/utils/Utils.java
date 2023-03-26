@@ -5,14 +5,17 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.entities.Pickup.PowerUp;
+import com.mygdx.game.entities.Player;
+import com.mygdx.game.entities.spawners.SnakeSpawner;
 import com.mygdx.game.entities.projectiles.Projectile;
 import com.mygdx.game.entities.Cobra;
 
-import java.io.*;
 import java.util.*;
 
 public class Utils {
@@ -49,7 +52,7 @@ public class Utils {
     }
 
 
-    public static void parseTiledObjectLayer(World world, MapObjects objects){
+    public static void parseTiledCollisionLayer(World world, MapObjects objects){
         for (MapObject o : objects) {
             if( !(o instanceof PolygonMapObject))
                 continue;
@@ -60,6 +63,24 @@ public class Utils {
             Body body = world.createBody(bDef);
             body.createFixture(shape,1.0f);
             shape.dispose();
+        }
+    }
+    public static void parseTiledSpawnLayer(World world, MapObjects objects, Player player, ArrayList<SnakeSpawner> snakeSpawners){
+        for (MapObject o : objects) {
+            if( !(o instanceof RectangleMapObject))
+                continue;
+
+            MapProperties props = o.getProperties();
+            if(props.get("type",String.class) == null || props.get("angle",float.class) == null)
+                continue;
+
+            switch (props.get("type",String.class)){
+                case "player_spawn" :
+                    player.setPosition(props.get("x",float.class), props.get("y",float.class));
+                    break;
+                case "spawner_snake" :
+                    snakeSpawners.add(new SnakeSpawner(world,o.getProperties().get("x",float.class), props.get("y",float.class), props.get("angle",float.class)));
+            }
         }
     }
 

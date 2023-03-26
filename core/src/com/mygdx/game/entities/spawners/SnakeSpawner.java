@@ -1,4 +1,4 @@
-package com.mygdx.game.entities;
+package com.mygdx.game.entities.spawners;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -23,7 +23,7 @@ public class SnakeSpawner {
     private float spawnCDMax = 10;
     private float spawnCDMin = 5;
     private float spawnCD;
-    private float spawnTimer = 0;
+    private float spawnTimer;
     private float projectileSpeed = 10;
     private float radius, angle;
     private float snakeMaxDist = 50;
@@ -36,6 +36,8 @@ public class SnakeSpawner {
         body.setUserData(this);
         this.angle = angle;
         projectiles = new ArrayList<>();
+        spawnTimer = 0;
+        spawnCD = MathUtils.random(spawnCDMin, spawnCDMax);
     }
 
     public void update(float delta){
@@ -81,6 +83,12 @@ public class SnakeSpawner {
     public void setRandomCD(){
         spawnCD = MathUtils.random(spawnCDMin, spawnCDMax);
     }
+
+    public void levelUp(){
+        spawnCDMax *= 0.8f;
+        spawnCDMin *= 0.8f;
+    }
+
     public void dispose(){
         for(Projectile proj : projectiles){
             proj.dispose();

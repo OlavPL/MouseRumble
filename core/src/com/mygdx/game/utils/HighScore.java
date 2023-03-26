@@ -35,7 +35,6 @@ public class HighScore implements Serializable, Comparable<HighScore> {
                 System.arraycopy(scores, 0, newScore, 0, scores.length);
                 newScore[scores.length-1] = new HighScore(points);
                 scores = newScore;
-                System.out.println(Arrays.toString(scores));
                 sortGeneric.quickSort(scores);
             }
         }
