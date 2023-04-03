@@ -36,7 +36,7 @@ public class Cobra extends Character {
     private float retreatCountdown = 0;
     private final float maxWanderDuration = 4f;
     private float wanderDuration = 0f;
-    private Behaviuour behaviour = Behaviuour.IDLE;
+    private Behaviour behaviour = Behaviour.IDLE;
     private final Vector2 retreatVector = new Vector2(0,0);
     private boolean isInContact = false;
 
@@ -112,11 +112,11 @@ public class Cobra extends Character {
     }
 
     public void setAggressive(){
-        behaviour = Behaviuour.AGGRESSIVE;
+        behaviour = Behaviour.AGGRESSIVE;
         speed = DEFAULT_SPEED;
     }
     public void setIdle(){
-        behaviour = Behaviuour.IDLE;
+        behaviour = Behaviour.IDLE;
         speed = DEFAULT_SPEED/3;
     }
 
@@ -131,7 +131,7 @@ public class Cobra extends Character {
         }
     }
     public void retreat(){
-        behaviour = Behaviuour.RETREATING;
+        behaviour = Behaviour.RETREATING;
         speed = DEFAULT_SPEED * 0.66f;
 //        float angle = MathUtils.atan2(body.getPosition().y + player.getPosition().y,body.getPosition().y + player.getPosition().y);
         float angle = MathUtils.atan2(

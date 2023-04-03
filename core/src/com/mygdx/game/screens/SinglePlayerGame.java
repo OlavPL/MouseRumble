@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -53,6 +54,7 @@ public class SinglePlayerGame implements Screen {
     private final Player player;
 
     //Spawners
+    private final ArrayList<Rectangle> arenaBounds = new ArrayList<>();
     private final ArrayList<Cobra> cobras = new ArrayList<>();
     private float cobraSpawnCD = 3f;
     private float cobraSpawnTimer = 0;
@@ -60,20 +62,20 @@ public class SinglePlayerGame implements Screen {
     private final ArrayList<Projectile> snakes;
     private final ArrayList<PowerUp> powers;
 
-    private float powerSpawnTimer = 0;
-    private float PowerCD = 7f;
+    private float powerUpSpawnTimer = 0;
+    private float powerUpCD = 15f;
 
     private final HighScore[] scores;
 
     // Spawns get progressively faster based on gametime / level threshold
     private float gameTime = 0;
-    private float level = 1;
+    private float stageLevel = 1;
     private float pointsMultiplier = 1;
     private final float LEVEL_THRESHOLD = 30;
 
     //sound
 
-    private Music theme;
+    private Music themeSong;
 
     public SinglePlayerGame(MouseRumble parent){
         this.parent = parent;
@@ -95,9 +97,9 @@ public class SinglePlayerGame implements Screen {
         world.setContactListener(new WorldContactListener());
 
         //sound
-        theme = Gdx.audio.newMusic(Gdx.files.internal("sounds/authenticOctopusGameGrindyourGears.mp3"));
-        theme.setLooping(true);
-        theme.play();
+        themeSong = Gdx.audio.newMusic(Gdx.files.internal("sounds/authenticOctopusGameGrindyourGears.mp3"));
+        themeSong.setLooping(true);
+        themeSong.play();
 
         // renderer
         sBatch = new SpriteBatch();
@@ -115,11 +117,11 @@ public class SinglePlayerGame implements Screen {
         gameCamera.setToOrtho(false, mapW / SCALE, mapH / SCALE);
 
         // populate spawners
-//        populateSnakeSpawner();
         snakes = new ArrayList<>();
         powers = new ArrayList<>();
         snakeSpawners = new ArrayList<>();
 
+        Utils.parseTiledArenaBounds(map.getLayers().get("spawn_bounds").getObjects(), arenaBounds);
         Utils.parseTiledSpawnLayer(world, map.getLayers().get("spawn_layer").getObjects(), player, snakeSpawners);
     }
 
@@ -133,7 +135,7 @@ public class SinglePlayerGame implements Screen {
         player.update(delta);
         if(player.getHealth() <=0)
             endGame();
-        player.addPoints(delta*(level*1.1f));
+        player.addPoints(delta*(stageLevel *1.1f));
         hud.updateScore((int)player.getPoints());
         hud.updateLives((int)player.getHealth());
 
@@ -156,10 +158,10 @@ public class SinglePlayerGame implements Screen {
 
         Utils.cleanPowerUps(world,powers);
 
-        powerSpawnTimer += delta;
-        if(powerSpawnTimer >= PowerCD){
+        powerUpSpawnTimer += delta;
+        if(powerUpSpawnTimer >= powerUpCD){
             spawnPowerUp();
-            powerSpawnTimer -= powerSpawnTimer;
+            powerUpSpawnTimer -= powerUpSpawnTimer;
         }
 
 
@@ -222,7 +224,7 @@ public class SinglePlayerGame implements Screen {
         sBatch.dispose();
         tmrenderer.dispose();
         map.dispose();
-        theme.dispose();
+        themeSong.dispose();
 
         player.getSpriteSheet().dispose();
         for(Projectile p :player.getProjectiles()){
@@ -238,39 +240,59 @@ public class SinglePlayerGame implements Screen {
 
     // Spawn random PowerUp on a random spot within map, excluding outer 2 tiles around the map
     private void spawnPowerUp(){
-        float posX = (float)((Math.random() * ((mapWidth-4)*tileWidth)) +tileWidth*2);
-        float posY = (float)((Math.random() * ((mapHeight-4)*tileHeight)) +tileHeight*2);
+
+        Vector2 pos = Utils.getRandomPos(
+                ( (( (mapWidth-4) * tileWidth )) + tileWidth * 2 ),
+                ( (( (mapWidth-4) * tileHeight )) + tileHeight * 2)
+        );
+//        Vector2 pos = new Vector2(
+//            (float)((Math.random() * ((mapWidth-4)*tileWidth)) +tileWidth*2),
+//            (float)((Math.random() * ((mapHeight-4)*tileHeight)) +tileHeight*2)
+//        );
+        if(!isValidSpawnLocation(pos)) {
+            spawnPowerUp();
+            return;
+        }
+
         int id = (int)(Math.random()*2);
         switch (id) {
             case 0 : {
-                powers.add(new PPHeal(world, "HealingCheese", posX, posY));
+                powers.add(new PPHeal(world, "HealingCheese", pos.x, pos.y));
                 break;
             }
             case 1 : {
-                powers.add(new PPShield(world, "ShieldingCheese", posX, posY));
+                powers.add(new PPShield(world, "ShieldingCheese", pos.x, pos.y));
                 break;
             }
         }
     }
     private void spawnCobra(){
-        float posX = (float)((Math.random() * ((mapWidth-4)*tileWidth)) +tileWidth*2);
-        float posY = (float)((Math.random() * ((mapHeight-4)*tileHeight)) +tileHeight*2);
-        cobras.add(new Cobra(world,posX, posY, player));
+        Vector2 pos = new Vector2(
+            (float)((Math.random() * ((mapWidth-4)*tileWidth)) +tileWidth*2),
+            (float)((Math.random() * ((mapHeight-4)*tileHeight)) +tileHeight*2)
+        );
+
+        if(!isValidSpawnLocation(pos)){
+            spawnCobra();
+            return;
+        }
+
+        cobras.add(new Cobra(world,pos.x, pos.y, player));
     }
 
     private void updateLevel(){
-        level = (int)(gameTime / LEVEL_THRESHOLD);
-        pointsMultiplier = 1 + level*0.1f;
-        cobraSpawnCD *= 0.8f;
+        stageLevel = (int)(gameTime / LEVEL_THRESHOLD);
+        pointsMultiplier = 1 + stageLevel *0.1f;
+        cobraSpawnCD *= 0.9f;
         for (SnakeSpawner spawner: snakeSpawners) {
             spawner.levelUp();
         }
         for (SnakeSpawner spawner : snakeSpawners){
-            spawner.setSpawnCDMax(spawner.getSpawnCDMax() * 0.8f);
-            spawner.setSpawnCDMin(spawner.getSpawnCDMin() * 0.8f);
+            spawner.setSpawnCDMax(spawner.getSpawnCDMax() * 0.9f);
+            spawner.setSpawnCDMin(spawner.getSpawnCDMin() * 0.9f);
         }
 
-        PowerCD *= 1.2f;
+        powerUpCD *= 1.2f;
         gameTime = 0;
         System.out.println("Stage Level Up");
     }
@@ -300,10 +322,19 @@ public class SinglePlayerGame implements Screen {
 
     }
 
+    private boolean isValidSpawnLocation(Vector2 pos){
+        for( Rectangle bounds : arenaBounds){
+            if(bounds.contains(pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void endGame(){
         // Serialize if score is good enough
         HighScore.serialize(scores, (int) player.getPoints());
         parent.changeScreen(ScreenType.HIGH_SCORE);
-        theme.stop();
+        themeSong.stop();
     }
 }

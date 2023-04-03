@@ -1,13 +1,14 @@
 package com.mygdx.game.handlers;
 
 import com.badlogic.gdx.physics.box2d.*;
-import com.mygdx.game.entities.Behaviuour;
+import com.mygdx.game.entities.Behaviour;
 import com.mygdx.game.entities.Pickup.PowerUp;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.entities.projectiles.PlayerProjectile;
 import com.mygdx.game.entities.projectiles.Projectile;
 import com.mygdx.game.entities.projectiles.Snake;
 import com.mygdx.game.entities.Cobra;
+import com.mygdx.game.utils.TiledObjectType;
 
 public class WorldContactListener implements ContactListener {
 
@@ -20,13 +21,21 @@ public class WorldContactListener implements ContactListener {
         if(fA.getUserData() == null || fB.getUserData() == null) return;
 
 
+        if(fA.getUserData().equals(TiledObjectType.ARENA_EDGE.objectType) || fB.getUserData().equals(TiledObjectType.ARENA_EDGE.objectType)){
+            System.out.println("Edge");
+            if( fA.getUserData() instanceof Snake || fB.getUserData() instanceof Snake){
+                Snake snake = (Snake) (fA.getUserData() instanceof Snake ? fA.getUserData() : fB.getUserData());
+                snake.hitArenaEdge();
+            }
+        }
+
         if(isPlayer_Cobra(fA, fB)){
-            Fixture cobraf = fA.getUserData() instanceof Cobra ? fA : fB;
-            Fixture playerf = cobraf == fA ? fB: fA;
-            Cobra cobra = (Cobra) cobraf.getUserData();
-            Player player = (Player) playerf.getUserData();
-            if(cobraf.isSensor()){
-                if(cobra.getBehaviour() == Behaviuour.RETREATING)
+            Fixture cobraF = fA.getUserData() instanceof Cobra ? fA : fB;
+            Fixture playerF = cobraF == fA ? fB: fA;
+            Cobra cobra = (Cobra) cobraF.getUserData();
+            Player player = (Player) playerF.getUserData();
+            if(cobraF.isSensor()){
+                if(cobra.getBehaviour() == Behaviour.RETREATING)
                     return;
 
                 cobra.setAggressive();
@@ -40,10 +49,10 @@ public class WorldContactListener implements ContactListener {
         }
 
         if(isPlayerProjectile_Cobra(fA, fB)){
-            Fixture cobraf = fA.getUserData() instanceof Cobra ? fA : fB;
-            Fixture projectile = cobraf == fA ? fB: fA;
-            Cobra cobra = (Cobra) cobraf.getUserData();
-            if(!cobraf.isSensor()){
+            Fixture cobraF = fA.getUserData() instanceof Cobra ? fA : fB;
+            Fixture projectile = cobraF == fA ? fB: fA;
+            Cobra cobra = (Cobra) cobraF.getUserData();
+            if(!cobraF.isSensor()){
                 cobra.die();
                 ((PlayerProjectile) projectile.getUserData()).setDestroy();
             }
@@ -51,7 +60,7 @@ public class WorldContactListener implements ContactListener {
         }
 
         if(isPlayer_Projectile(fA, fB)){
-            Fixture projectile = fA.getUserData() == "Snake" ? fA : fB;
+            Fixture projectile = fA.getUserData() instanceof Snake ? fA : fB;
             Fixture player = projectile == fA ? fB: fA;
             if(!(projectile.getUserData().getClass().isAssignableFrom(PlayerProjectile.class))){
                 Snake snake = (Snake) projectile.getUserData();

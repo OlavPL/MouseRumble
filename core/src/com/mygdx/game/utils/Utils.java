@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.entities.Pickup.PowerUp;
@@ -51,6 +52,47 @@ public class Utils {
         }
     }
 
+    public static Vector2 getRandomPos(float maxWidth, float maxHeight){
+        return new Vector2((float)((Math.random() * maxWidth)),(float)((Math.random() * maxHeight)));
+    }
+
+
+    public static void parseTiledArenaBounds(MapObjects objects, ArrayList<Rectangle> spawnBounds){
+        for (MapObject o : objects) {
+            if( !(o instanceof RectangleMapObject))
+                continue;
+
+            MapProperties props = o.getProperties();
+            spawnBounds.add(new Rectangle(
+                    props.get("x", float.class),
+                    props.get("y", float.class),
+                    props.get("width", float.class),
+                    props.get("height", float.class))
+            );
+        }
+    }
+    public static void parseTiledSpawnLayer(World world, MapObjects objects, Player player, ArrayList<SnakeSpawner> snakeSpawners){
+        for (MapObject o : objects) {
+            if( !(o instanceof RectangleMapObject))
+                continue;
+
+            MapProperties props = o.getProperties();
+            if(props.get("type",String.class) == null )
+                continue;
+
+            switch (props.get("type",String.class)){
+                case "player_spawn" :
+                    System.out.println(props.get("Player Spawn Coords"+"x",float.class)+", "+ props.get("y",float.class));
+                    player.setPosition(props.get("x",float.class), props.get("y",float.class));
+                    break;
+                case "spawner_snake" :
+                    if( props.get("angle",float.class) == null)
+                        continue;
+                    snakeSpawners.add(new SnakeSpawner(world,o.getProperties().get("x",float.class), props.get("y",float.class), props.get("angle",float.class)));
+                    break;
+            }
+        }
+    }
 
     public static void parseTiledCollisionLayer(World world, MapObjects objects){
         for (MapObject o : objects) {
@@ -61,29 +103,10 @@ public class Utils {
             BodyDef bDef = new BodyDef();
             bDef.type = BodyDef.BodyType.StaticBody;
             Body body = world.createBody(bDef);
-            body.createFixture(shape,1.0f);
+            body.createFixture(shape,1.0f).setUserData(o.getProperties().get("objectType", int.class));
             shape.dispose();
         }
     }
-    public static void parseTiledSpawnLayer(World world, MapObjects objects, Player player, ArrayList<SnakeSpawner> snakeSpawners){
-        for (MapObject o : objects) {
-            if( !(o instanceof RectangleMapObject))
-                continue;
-
-            MapProperties props = o.getProperties();
-            if(props.get("type",String.class) == null || props.get("angle",float.class) == null)
-                continue;
-
-            switch (props.get("type",String.class)){
-                case "player_spawn" :
-                    player.setPosition(props.get("x",float.class), props.get("y",float.class));
-                    break;
-                case "spawner_snake" :
-                    snakeSpawners.add(new SnakeSpawner(world,o.getProperties().get("x",float.class), props.get("y",float.class), props.get("angle",float.class)));
-            }
-        }
-    }
-
     // Create a Shape from all the points on a Tiled PolygonMapObject
     private static ChainShape createPolygon(PolygonMapObject object){
         float[] vertices = object.getPolygon().getTransformedVertices();

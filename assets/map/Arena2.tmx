@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.0" orientation="orthogonal" renderorder="right-down" width="70" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="44">
+<map version="1.10" tiledversion="1.10.0" orientation="orthogonal" renderorder="right-down" width="70" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="52">
  <tileset firstgid="1" source="../MapSprites/Ground_Tileset.tsx"/>
  <tileset firstgid="331" source="../MapSprites/Rocks.tsx"/>
  <tileset firstgid="346" source="../MapSprites/AnimatedWaterTileset.tsx"/>
@@ -223,30 +223,57 @@
  </layer>
  <objectgroup id="4" name="collision-layer">
   <object id="9" x="321.333" y="211.333">
+   <properties>
+    <property name="objectType" type="int" value="2"/>
+   </properties>
    <polygon points="1.66667,2.66667 7.74786,8 19.2436,8 26,2.66667 25.9957,-4.66667 20.5812,-8 7.11538,-8 1.66774,-5.04167"/>
   </object>
   <object id="11" x="241.375" y="306.75">
+   <properties>
+    <property name="objectType" type="int" value="2"/>
+   </properties>
    <polygon points="1.66667,2.66667 7.74786,8 19.2436,8 26,2.66667 25.9957,-4.66667 20.5812,-8 7.11538,-8 1.66774,-5.04167"/>
   </object>
   <object id="12" x="241.125" y="419.875">
+   <properties>
+    <property name="objectType" type="int" value="2"/>
+   </properties>
    <polygon points="1.66667,2.66667 7.74786,8 19.2436,8 26,2.66667 25.9957,-4.66667 20.5812,-8 7.11538,-8 1.66774,-5.04167"/>
   </object>
   <object id="13" x="449.152" y="339.651">
+   <properties>
+    <property name="objectType" type="int" value="2"/>
+   </properties>
    <polygon points="1.66667,2.66667 7.74786,8 19.2436,8 26,2.66667 25.9957,-4.66667 20.5812,-8 7.11538,-8 1.66774,-5.04167"/>
   </object>
   <object id="14" x="497.636" y="210.909">
+   <properties>
+    <property name="objectType" type="int" value="2"/>
+   </properties>
    <polygon points="1.66667,2.66667 7.74786,8 19.2436,8 26,2.66667 25.9957,-4.66667 20.5812,-8 7.11538,-8 1.66774,-5.04167"/>
   </object>
   <object id="17" x="593.091" y="371.773">
+   <properties>
+    <property name="objectType" type="int" value="2"/>
+   </properties>
    <polygon points="1.66667,2.66667 7.74786,8 19.2436,8 26,2.66667 25.9957,-4.66667 20.5812,-8 7.11538,-8 1.66774,-5.04167"/>
   </object>
   <object id="18" x="641.091" y="531.773">
+   <properties>
+    <property name="objectType" type="int" value="2"/>
+   </properties>
    <polygon points="1.66667,2.66667 7.74786,8 19.2436,8 26,2.66667 25.9957,-4.66667 20.5812,-8 7.11538,-8 1.66774,-5.04167"/>
   </object>
-  <object id="40" x="176" y="176" visible="0">
+  <object id="40" x="176" y="176">
+   <properties>
+    <property name="objectType" type="int" value="0"/>
+   </properties>
    <polygon points="0,0 0,272 96,272 96,416 432,416 432,368 576,368 576,192 432,192 432,0"/>
   </object>
-  <object id="42" x="368" y="448" visible="0">
+  <object id="42" x="368" y="448">
+   <properties>
+    <property name="objectType" type="int" value="0"/>
+   </properties>
    <polygon points="0,0 0,96 176,96 176,0"/>
   </object>
  </objectgroup>
@@ -254,6 +281,8 @@
   <object id="34" x="179.204" y="447.71">
    <properties>
     <property name="angle" type="float" value="0"/>
+    <property name="objectType" type="int" value="5"/>
+    <property name="spawnType" type="int" value="1"/>
     <property name="type" value="spawner_snake"/>
    </properties>
    <point/>
@@ -261,6 +290,8 @@
   <object id="35" x="178.818" y="184.31">
    <properties>
     <property name="angle" type="float" value="270"/>
+    <property name="objectType" type="int" value="5"/>
+    <property name="spawnType" type="int" value="1"/>
     <property name="type" value="spawner_snake"/>
    </properties>
    <point/>
@@ -268,6 +299,8 @@
   <object id="36" x="605.197" y="183.553">
    <properties>
     <property name="angle" type="float" value="180"/>
+    <property name="objectType" type="int" value="5"/>
+    <property name="spawnType" type="int" value="1"/>
     <property name="type" value="spawner_snake"/>
    </properties>
    <point/>
@@ -275,6 +308,8 @@
   <object id="37" x="749.424" y="542.924">
    <properties>
     <property name="angle" type="float" value="90"/>
+    <property name="objectType" type="int" value="5"/>
+    <property name="spawnType" type="int" value="1"/>
     <property name="type" value="spawner_snake"/>
    </properties>
    <point/>
@@ -282,15 +317,46 @@
   <object id="38" x="275.561" y="591.348">
    <properties>
     <property name="angle" type="float" value="0"/>
+    <property name="objectType" type="int" value="5"/>
+    <property name="spawnType" type="int" value="1"/>
     <property name="type" value="spawner_snake"/>
    </properties>
    <point/>
   </object>
   <object id="39" x="463.576" y="412.545">
    <properties>
+    <property name="objectType" type="int" value="5"/>
+    <property name="spawnType" type="int" value="0"/>
     <property name="type" value="player_spawn"/>
    </properties>
    <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="spawn_bounds" visible="0">
+  <object id="46" x="176" y="176" width="432" height="272">
+   <properties>
+    <property name="objectType" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="47" x="272" y="448" width="96" height="144">
+   <properties>
+    <property name="objectType" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="49" x="368" y="544" width="176" height="48">
+   <properties>
+    <property name="objectType" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="50" x="608" y="368" width="144" height="176">
+   <properties>
+    <property name="objectType" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="51" x="544" y="448" width="64" height="144">
+   <properties>
+    <property name="objectType" type="int" value="1"/>
+   </properties>
   </object>
  </objectgroup>
 </map>
