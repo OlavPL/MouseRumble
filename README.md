@@ -1,7 +1,7 @@
 # MouseRumble
 A kind of rougelike / endeless survival game
 
-Keybinds: movement-> movement & shoot-> space
+Keybinds: movement-> WASD, shoot-> space, aim-> arrows
 
 Project I started for local 24 hour Hackathon in 2023
 
