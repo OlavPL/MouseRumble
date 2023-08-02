@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.game.handlers.BodyAnimationHandler;
 import com.mygdx.game.utils.Constants;
 import com.mygdx.game.utils.Factories;
 import com.mygdx.game.utils.Utils;
@@ -37,15 +38,9 @@ public abstract class Character {
 
     protected final Sound soundGetHit, soundShoot;
 
+    protected BodyAnimationHandler animationHandler;
 
-    // animation
-    protected Texture spriteSheet;
-    protected Animation<TextureRegion> moveRightAnim, moveLeftAnim, moveUpAnim, moveDownAnim, idleAnimation;
 
-    protected TextureRegion currentFrame;
-    protected int frameColumns;
-    protected int frameRows;
-    protected float stateTime;
 
     public Character(World world, float posX, float posY, int width, int height, Texture spriteSheet,
                      int frameRows, int frameColumns, Sound soundGetHit, Sound soundShoot
@@ -56,23 +51,9 @@ public abstract class Character {
         body = Factories.createBody(world,posX, posY,false, true);
         Factories.createFixtureDef(body, width, height,false);
         body.getFixtureList().get(0).setUserData(this);
-        this.spriteSheet = spriteSheet;
-        this.frameColumns = frameColumns;
-        this.frameRows = frameRows;
+        animationHandler = new BodyAnimationHandler(this.body, spriteSheet, frameColumns, frameRows);
         this.soundShoot = soundShoot;
         this.soundGetHit = soundGetHit;
-
-        Animation<TextureRegion>[] animations = Utils.createMovementAnimations(spriteSheet, frameColumns, frameRows);
-        for (int i = 0; i < animations.length; i++) {
-            switch (i){
-                case 0: moveRightAnim = animations[i];
-                case 1: moveLeftAnim = animations[i];
-                case 2: moveUpAnim = animations[i];
-                case 3: moveDownAnim = animations[i];
-            }
-        }
-        stateTime = 0;
-        currentFrame = getCurrentFrame();
     }
 
     public abstract void update(float delta);
@@ -93,27 +74,6 @@ public abstract class Character {
     }
     public abstract void updateMovement();
     public Vector2 getPosition(){return body.getPosition();}
-
-    public TextureRegion selectFrame(){
-        if( Math.abs(getBody().getLinearVelocity().x) > Math.abs(getBody().getLinearVelocity().y ) ){
-            if(getBody().getLinearVelocity().x < 0) {
-                return moveLeftAnim.getKeyFrame(stateTime, true);
-            }
-
-            return moveRightAnim.getKeyFrame(stateTime,true);
-        }
-        else {
-            if (getBody().getLinearVelocity().y > 0)
-                return moveUpAnim.getKeyFrame(stateTime, true);
-
-            moveDownAnim.getKeyFrame(stateTime, true);
-        }
-
-        if(idleAnimation != null)
-            return idleAnimation.getKeyFrame(stateTime,true);
-
-        return moveDownAnim.getKeyFrame(stateTime, true);
-    }
 
     public void setPosition(float x, float y){
         body.setTransform(x / Constants.PPM, y / Constants.PPM, 0);

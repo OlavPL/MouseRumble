@@ -11,8 +11,10 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.game.effects.WaterSplash;
 import com.mygdx.game.entities.Pickup.PowerUp;
 import com.mygdx.game.entities.Player;
+import com.mygdx.game.entities.projectiles.Snake;
 import com.mygdx.game.entities.spawners.SnakeSpawner;
 import com.mygdx.game.entities.projectiles.Projectile;
 import com.mygdx.game.entities.Cobra;
@@ -31,14 +33,39 @@ public class Utils {
             }
         }
     }
+    public static void iterateProjectiles(World world, float delta, ArrayList<Projectile> projectiles, ArrayList<WaterSplash> animEffects){
+        for(Iterator<Projectile> iter = projectiles.iterator(); iter.hasNext(); ) {
+            Projectile p = iter.next();
+            p.update(delta);
+            if(p.isDestroy()) {
+                if(p.isHitWater()) {
+                    animEffects.add(new WaterSplash( p.getBody().getPosition().x * Constants.PPM, p.getBody().getPosition().y * Constants.PPM));
+                }
+                world.destroyBody(p.getBody());
+                iter.remove();
+            }
+        }
+    }
+
+    public static void iterateAnimEffects(World world, float delta, ArrayList<WaterSplash> effects){
+        for(Iterator<WaterSplash> iter = effects.iterator(); iter.hasNext(); ) {
+            WaterSplash ws = iter.next();
+            ws.update(delta);
+            if(ws.destroy) {
+                iter.remove();
+            }
+        }
+    }
+
     public static void iterateCobras(World world, float delta, ArrayList<Cobra> cobras){
         for(Iterator<Cobra> iter = cobras.iterator(); iter.hasNext(); ) {
             Cobra c = iter.next();
             c.update(delta);
             if(c.isDestroy()) {
                 world.destroyBody(c.getBody());
-                c.getSpriteSheet().dispose();
+                c.getAnimationHandler().getSpriteSheet().dispose();
                 iter.remove();
+
             }
         }
     }
@@ -122,6 +149,10 @@ public class Utils {
         return cs;
     }
 
+    public static Animation<TextureRegion> createAnimation(Texture spriteSheet, int frameCols, float frameDuration){
+        return new Animation<>(frameDuration, TextureRegion.split(spriteSheet,spriteSheet.getWidth()/frameCols, spriteSheet.getHeight())[0] );
+    }
+
     /**
      *
      * @param spriteSheet Sprite sheet for animations
@@ -130,7 +161,7 @@ public class Utils {
      * @return returns a list Animation<TextureRegion></> for movement in order -> right, left, up down
      */
     public static Animation<TextureRegion>[] createMovementAnimations(Texture spriteSheet, int frameColumns, int frameRows){
-        //         Split up sprite sheet and make arrays for the different animations
+        // Split up sprite sheet and make arrays for the different animations
         TextureRegion[][] tmp = TextureRegion.split(spriteSheet,spriteSheet.getWidth()/frameColumns, spriteSheet.getHeight()/frameRows);
         TextureRegion[]   moveLeftFrames = new TextureRegion[frameColumns];
         TextureRegion[]   moveRightFrames = new TextureRegion[frameColumns];
@@ -144,7 +175,6 @@ public class Utils {
 
             moveDownFrames [i] = tmp[1][i];
             moveUpFrames   [i] = tmp[2][i];
-
         }
 
         return  new Animation[]{

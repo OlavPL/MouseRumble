@@ -6,8 +6,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.utils.Factories;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public abstract class Projectile {
     protected final float MAX_DISTANCE;
     protected float distanceTraveled;
@@ -15,6 +17,7 @@ public abstract class Projectile {
     protected Texture texture;
     protected float x,y;
     protected boolean destroy = false;
+    protected boolean hitWater = false;
     Body body;
 
     public Projectile(World world, float radius, boolean isStatic, boolean rotationFixed, float maxDist, float speed, Texture texture, float x, float y){

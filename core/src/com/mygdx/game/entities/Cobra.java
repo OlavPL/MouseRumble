@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.utils.Constants;
+import com.mygdx.game.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,13 +51,13 @@ public class Cobra extends Character {
         this.player = player;
         attack = 2;
         createCobraSensor(world,posX, posY);
-        idleAnimation = new Animation<>(0.4f,moveRightAnim.getKeyFrames());
         setIdle();
     }
 
     @Override
     public void update(float delta) {
-        stateTime += delta;
+//        stateTime += delta;
+        animationHandler.update(delta);
 
         switch(behaviour){
             case IDLE:{
@@ -87,13 +89,15 @@ public class Cobra extends Character {
         }
 
         // Get current frame of animation for the current stateTime
-        currentFrame = selectFrame();
+//        currentFrame = selectFrame();
         updateMovement();
     }
 
     @Override
     public void render(SpriteBatch sBatch) {
-        sBatch.draw(currentFrame, body.getPosition().x * PPM - (float)WIDTH/2, body.getPosition().y * PPM - (float)HEIGHT/2);
+
+//        sBatch.draw(currentFrame, body.getPosition().x * PPM - (float)WIDTH/2, body.getPosition().y * PPM - (float)HEIGHT/2);
+        sBatch.draw(animationHandler.getCurrentFrame(), body.getPosition().x * PPM - (float)WIDTH/2, body.getPosition().y * PPM - (float)HEIGHT/2);
     }
     @Override
     public void die(){

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.mygdx.game.effects.WaterSplash;
 import com.mygdx.game.entities.projectiles.AnimatedProjectile;
 import com.mygdx.game.entities.projectiles.Projectile;
 import com.mygdx.game.entities.projectiles.Snake;
@@ -26,8 +27,9 @@ public class SnakeSpawner {
     private float spawnTimer;
     private float projectileSpeed = 10;
     private float radius, angle;
-    private float snakeMaxDist = 50;
-    private ArrayList<Projectile> projectiles;
+    private float snakeMaxDist = 1000;
+    private ArrayList<Projectile> projectiles = new ArrayList<>();
+    private ArrayList<WaterSplash> animationEffects = new ArrayList<>();
     World world;
 
     public SnakeSpawner(World world, float posX, float posY, float angle){
@@ -35,7 +37,6 @@ public class SnakeSpawner {
         body = Factories.createBox(world, posX, posY, 5,5,true,true,true);
         body.setUserData(this);
         this.angle = angle;
-        projectiles = new ArrayList<>();
         spawnTimer = 0;
         spawnCD = MathUtils.random(spawnCDMin, spawnCDMax);
     }
@@ -48,12 +49,22 @@ public class SnakeSpawner {
             setRandomCD();
             spawnSnake();
         }
-        Utils.iterateProjectiles(world,delta,projectiles);
+        Utils.iterateProjectiles(world,delta,projectiles, animationEffects);
+        Utils.iterateAnimEffects(world, delta, animationEffects);
+
+//        for(WaterSplash ws : animationEffects){
+//            ws.update(delta);
+//            if(ws.destroy){
+//            }
+//        }
     }
 
     public void render(SpriteBatch sBatch){
         for(Projectile proj : projectiles){
             proj.render(sBatch);
+        }
+        for(WaterSplash ws : animationEffects){
+            ws.render(sBatch);
         }
     }
     public Snake getNewSnake(World world){
@@ -92,6 +103,9 @@ public class SnakeSpawner {
     public void dispose(){
         for(Projectile proj : projectiles){
             proj.dispose();
+        }
+        for(WaterSplash ws : animationEffects){
+            ws.dispose();
         }
     }
 }

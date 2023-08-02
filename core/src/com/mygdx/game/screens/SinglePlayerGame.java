@@ -5,7 +5,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -15,6 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.effects.WaterSplash;
 import com.mygdx.game.entities.Cobra;
 import com.mygdx.game.entities.Pickup.PPHeal;
 import com.mygdx.game.entities.Pickup.PPShield;
@@ -45,6 +48,7 @@ public class SinglePlayerGame implements Screen {
 
     //World and listeners
     private final World world;
+    ArrayList<WaterSplash> animationEffects = new ArrayList<>();
 
     //rendering
     private final SpriteBatch sBatch;
@@ -59,7 +63,7 @@ public class SinglePlayerGame implements Screen {
     private float cobraSpawnCD = 3f;
     private float cobraSpawnTimer = 0;
     private ArrayList<SnakeSpawner> snakeSpawners;
-    private final ArrayList<Projectile> snakes;
+//    private final ArrayList<Projectile> snakes;
     private final ArrayList<PowerUp> powers;
 
     private float powerUpSpawnTimer = 0;
@@ -72,6 +76,7 @@ public class SinglePlayerGame implements Screen {
     private float stageLevel = 1;
     private float pointsMultiplier = 1;
     private final float LEVEL_THRESHOLD = 30;
+
 
     //sound
 
@@ -99,6 +104,7 @@ public class SinglePlayerGame implements Screen {
         //sound
         themeSong = Gdx.audio.newMusic(Gdx.files.internal("sounds/authenticOctopusGameGrindyourGears.mp3"));
         themeSong.setLooping(true);
+        themeSong.setVolume(0.6f);
         themeSong.play();
 
         // renderer
@@ -117,7 +123,7 @@ public class SinglePlayerGame implements Screen {
         gameCamera.setToOrtho(false, mapW / SCALE, mapH / SCALE);
 
         // populate spawners
-        snakes = new ArrayList<>();
+//        snakes = new ArrayList<>();
         powers = new ArrayList<>();
         snakeSpawners = new ArrayList<>();
 
@@ -148,13 +154,16 @@ public class SinglePlayerGame implements Screen {
             spawnCobra();
             cobraSpawnTimer -= cobraSpawnCD;
         }
-        Utils.iterateCobras(world, delta,cobras);
+        Utils.iterateCobras(world, delta ,cobras);
+//        Utils.iterateProjectiles(world,delta, snakes, animationEffects);
+
+        for(WaterSplash ws : animationEffects){
+            ws.update(delta);
+        }
 
         for (SnakeSpawner spawner : snakeSpawners) {
             spawner.update(delta);
         }
-
-        Utils.iterateProjectiles(world,delta, snakes);
 
         Utils.cleanPowerUps(world,powers);
 
@@ -198,6 +207,9 @@ public class SinglePlayerGame implements Screen {
             for(PowerUp pp : powers){
                 pp.render(sBatch);
             }
+            for(WaterSplash ws : animationEffects){
+                ws.render(sBatch);
+            }
         sBatch.end();
 
         //set view and Render Hud
@@ -226,7 +238,7 @@ public class SinglePlayerGame implements Screen {
         map.dispose();
         themeSong.dispose();
 
-        player.getSpriteSheet().dispose();
+        player.getAnimationHandler().getSpriteSheet().dispose();
         for(Projectile p :player.getProjectiles()){
             p.getTexture().dispose();
         }

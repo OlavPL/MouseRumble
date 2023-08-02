@@ -46,7 +46,7 @@ public class Player extends Character implements InputProcessor {
 
     public Player(World world, float posX, float posY){
         super(
-                world, posX, posY, WIDTH, HEIGHT,new Texture("sprites/characterSprites/mouseWalk.png"),
+                world, posX, posY, WIDTH, HEIGHT, new Texture("sprites/characterSprites/mouseWalk.png"),
                 3,4, Gdx.audio.newSound(Gdx.files.internal("sounds/squeak.wav")),
                 Gdx.audio.newSound(Gdx.files.internal("sounds/thud.wav"))
         );
@@ -58,7 +58,8 @@ public class Player extends Character implements InputProcessor {
     // Update loop for player related stuff, uses world delta
     @Override
     public void update(float delta){
-        stateTime += delta;
+        animationHandler.update(delta);
+//        stateTime += delta;
         updateMovement();
 
         if(!canShoot)
@@ -72,15 +73,18 @@ public class Player extends Character implements InputProcessor {
         Utils.iterateProjectiles(world, delta, projectiles);
 
         if(body.getLinearVelocity().isZero())
-            currentFrame = singularMouse;
-        else
-            currentFrame = selectFrame();
+            animationHandler.setCurrentFrame(singularMouse);
+//        if(body.getLinearVelocity().isZero())
+//            currentFrame = singularMouse;
+//        else
+//            currentFrame = selectFrame();
     }
 
     @Override
     public void render(SpriteBatch batch){
         //draw player and projectiles
-        batch.draw(currentFrame,getPosition().x * PPM - (float) (WIDTH/2) - TEXTURE_OFFSET, getPosition().y * PPM - (float)(HEIGHT/2));
+        batch.draw(animationHandler.getCurrentFrame(),getPosition().x * PPM - (float) (WIDTH/2) - TEXTURE_OFFSET, getPosition().y * PPM - (float)(HEIGHT/2));
+//        batch.draw(getCurrentFrame(),getPosition().x * PPM - (float) (WIDTH/2) - TEXTURE_OFFSET, getPosition().y * PPM - (float)(HEIGHT/2));
         if(isShielded)
             batch.draw(shieldTexture,getPosition().x * PPM - (float)(shieldTexture.getWidth()/2) , getPosition().y * PPM - (float)(shieldTexture.getHeight()/2));
 
@@ -253,7 +257,7 @@ public class Player extends Character implements InputProcessor {
 //        if(y < Constants.TILE_SIZE*2 || y > Constants.MAP_HEIGHT * TILE_SIZE - TILE_SIZE )
 //            return;
 
-        soundShoot.play(.6f);
+        soundShoot.play(.3f);
         projectiles.add(new PlayerProjectile(
                 world, 40,20, x, y, new Vector2(dir.x,dir.y)
         ));
@@ -269,7 +273,7 @@ public class Player extends Character implements InputProcessor {
             isShielded = false;
             return;
         }
-        this.soundGetHit.play();
+        this.soundGetHit.play(0.6f);
         health-= damage;
         System.out.println("Player took "+ (int)damage +" damage");
     }

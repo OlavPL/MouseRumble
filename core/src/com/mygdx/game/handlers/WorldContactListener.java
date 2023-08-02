@@ -21,13 +21,7 @@ public class WorldContactListener implements ContactListener {
         if(fA.getUserData() == null || fB.getUserData() == null) return;
 
 
-        if(fA.getUserData().equals(TiledObjectType.ARENA_EDGE.objectType) || fB.getUserData().equals(TiledObjectType.ARENA_EDGE.objectType)){
-            System.out.println("Edge");
-            if( fA.getUserData() instanceof Snake || fB.getUserData() instanceof Snake){
-                Snake snake = (Snake) (fA.getUserData() instanceof Snake ? fA.getUserData() : fB.getUserData());
-                snake.hitArenaEdge();
-            }
-        }
+
 
         if(isPlayer_Cobra(fA, fB)){
             Fixture cobraF = fA.getUserData() instanceof Cobra ? fA : fB;
@@ -103,6 +97,19 @@ public class WorldContactListener implements ContactListener {
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
+        Fixture fA = contact.getFixtureA();
+        Fixture fB = contact.getFixtureB();
+
+        if(fA == null || fB == null) return;
+        if(fA.getUserData() == null || fB.getUserData() == null) return;
+
+        if(fA.getUserData().equals(TiledObjectType.ARENA_EDGE.objectType) || fB.getUserData().equals(TiledObjectType.ARENA_EDGE.objectType)){
+            if( fA.getUserData() instanceof Snake || fB.getUserData() instanceof Snake){
+                Snake snake = (Snake) (fA.getUserData() instanceof Snake ? fA.getUserData() : fB.getUserData());
+                snake.hitArenaEdge();
+                contact.setEnabled(false);
+            }
+        }
     }
 
     @Override
