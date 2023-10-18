@@ -1,6 +1,7 @@
 # MouseRumble
 A kind of rougelike / endeless survival game
 Link to download - https://github.com/OlavPL/MouseRumble/releases/tag/0.2.0
+
 Keybinds: movement-> WASD, shoot-> space, aim-> arrows
 
 Project I started for local 24 hour Hackathon in 2023
